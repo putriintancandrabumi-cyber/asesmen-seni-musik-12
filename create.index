@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asesmen Seni Musik Kelas XII SMA</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
+        }
+        .header h1 { margin: 0 0 8px 0; font-size: 1.8rem; }
+        .header p { margin: 0; opacity: 0.9; }
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .identity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 600px) { .identity-grid { grid-template-columns: 1fr; } }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .progress-bar-container {
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            background: var(--card);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .progress-track {
+            flex-grow: 1;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .question-card {
+            transition: transform 0.2s;
+        }
+        .q-number {
+            display: inline-block;
+            background: #e0e7ff;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+        .q-text {
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin: 0 0 16px 0;
+        }
+        .options {
+            display: flex;
+            gap: 12px;
+        }
+        .option-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .option-btn:hover { border-color: var(--primary); background: #f5f3ff; }
+        .option-btn.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        .explanation {
+            display: none;
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        .explanation.correct {
+            background: #dcfce7;
+            border-left: 4px solid var(--success);
+            color: #14532d;
+        }
+        .explanation.incorrect {
+            background: #fee2e2;
+            border-left: 4px solid var(--danger);
+            color: #7f1d1d;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-submit:hover { background: var(--primary-hover); }
+        .btn-submit:disabled { background: var(--muted); cursor: not-allowed; }
+        #result-box {
+            display: none;
+            text-align: center;
+            background: #eff6ff;
+            border: 2px solid var(--primary);
+        }
+        .score-badge {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        .status-msg {
+            margin-top: 12px;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Asesmen Sumatif Seni Musik</h1>
+        <p>Kelas XII SMA • Materi: Musik Kontemporer, Aransemen, Kritik & Manajemen Pertunjukan</p>
+    </div>
+
+    <div class="card">
+        <h3>Identitas Peserta Didik</h3>
+        <div class="identity-grid">
+            <div class="form-group">
+                <label for="studentName">Nama Lengkap *</label>
+                <input type="text" id="studentName" placeholder="Masukkan nama lengkap..." required>
+            </div>
+            <div class="form-group">
+                <label for="studentClass">Kelas *</label>
+                <input type="text" id="studentClass" placeholder="Contoh: XII IPA 1 / XII-A" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="progress-bar-container">
+        <span style="font-weight: 600; font-size: 0.9rem;">Terjawab: <span id="answered-count">0</span>/30</span>
+        <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <div id="quiz-container"></div>
+
+    <button id="submit-btn" class="btn-submit" onclick="submitQuiz()">Selesai & Kirim Hasil ke Guru</button>
+
+    <div id="result-box" class="card" style="margin-top: 24px;">
+        <h2>Hasil Asesmen Anda</h2>
+        <div class="score-badge" id="final-score">0</div>
+        <p id="score-detail"></p>
+        <div id="email-status" class="status-msg"></div>
+        <p style="font-size: 0.9rem; color: var(--muted); margin-top: 16px;">Silakan gulir ke atas untuk membaca pembahasan pada setiap nomor soal.</p>
+    </div>
+</div>
+
+<script>
+    // =========================================================================
+    // PENGATURAN EMAIL: Ganti URL di bawah ini dengan Endpoint Formspree Anda!
+    // =========================================================================
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/GANTI_DENGAN_KODE_ANDA";
+
+    // Bank 30 Soal Seni Musik Kelas XII SMA (Benar / Salah + Penjelasan)
+    const questions = [
+        {
+            q: "Musik kontemporer di Indonesia mulai berkembang pesat setelah munculnya gerakan pembaruan yang dipelopori oleh tokoh-tokoh seperti Slamet Abdul Sjukur dan Harry Roesli.",
+            a: true,
+            exp: "Benar. Slamet Abdul Sjukur dan Harry Roesli merupakan pionir musik kontemporer Indonesia yang berani keluar dari pakem konvensional baik dari segi instrumen maupun konsep garapan."
+        },
+        {
+            q: "Salah satu ciri utama musik kontemporer adalah keterikatan yang sangat ketat pada tangga nada diatonis mayor dan minor tradisional.",
+            a: false,
+            exp: "Salah. Musik kontemporer justru membebaskan diri dari aturan harmoni konvensional, sering menggunakan tangga nada non-diatonis, atonal, poliritmik, hingga eksplorasi bunyi non-musikal."
+        },
+        {
+            q: "Teknik 'Prepared Piano' yang dipopulerkan oleh John Cage dilakukan dengan cara meletakkan benda-benda seperti baut, karet, atau kayu di antara senar piano untuk mengubah warna suaranya.",
+            a: true,
+            exp: "Benar. Prepared piano adalah teknik memodifikasi timbre piano akustik dengan menyisipkan objek tertentu pada senarnya sehingga menghasilkan bunyi perkusif yang unik."
+        },
+        {
+            q: "Dalam konsep musik kontemporer, bunyi yang berasal dari perkakas dapur, gesekan batu, atau suara alam tidak dapat dikategorikan sebagai sumber bunyi musik.",
+            a: false,
+            exp: "Salah. Musik kontemporer memandang bahwa segala sumber bunyi (found objects) dapat diolah menjadi elemen musikal selama disusun dengan kesadaran estetis."
+        },
+        {
+            q: "Karya 'Tetabuhan Sungut' karya Slamet Abdul Sjukur merupakan contoh komposisi kontemporer yang memaksimalkan eksplorasi bunyi vokal manusia tanpa menggunakan alat musik konvensional.",
+            a: true,
+            exp: "Benar. 'Tetabuhan Sungut' (1976) menggunakan suara mulut/vokal manusia (bisikan, decakan, teriakan) yang disusun layaknya ansambel perkusi."
+        },
+        {
+            q: "Dalam pembuatan aransemen musik, mengubah melodi utama secara total hingga lagu aslinya tidak dikenali lagi merupakan syarat wajib agar disebut aransemen yang baik.",
+            a: false,
+            exp: "Salah. Aransemen adalah penyesuaian komposisi musik dengan nomor suara penyanyi atau instrumen lain tanpa menghilangkan esensi atau melodi pokok lagu aslinya."
+        },
+        {
+            q: "Proses memindahkan suatu karya musik dari satu tangga nada ke tangga nada lainnya (misalnya dari C Mayor ke E Mayor) untuk menyesuaikan wilayah suara penyanyi disebut transposisi.",
+            a: true,
+            exp: "Benar. Transposisi adalah pemindahan nada dasar sebuah lagu dengan mempertahankan jarak interval antar nadanya."
+        },
+        {
+            q: "Dalam aransemen paduan suara empat suara (SATB), urutan register suara dari yang tertinggi hingga terendah adalah Sopran, Tenor, Alto, Bass.",
+            a: false,
+            exp: "Salah. Urutan yang benar dari tertinggi ke terendah adalah Sopran (wanita tinggi), Alto (wanita rendah), Tenor (pria tinggi), dan Bass (pria rendah)."
+        },
+        {
+            q: "Tekstur musik yang terdiri dari satu melodi utama yang diiringi oleh akor-akor pengiring disebut tekstur homofoni.",
+            a: true,
+            exp: "Benar. Homofoni adalah tekstur musik paling umum dalam musik populer dan klasik, di mana satu jalur melodi dominan didukung oleh harmoni/akor."
+        },
+        {
+            q: "Tekstur polifoni terjadi apabila beberapa jalur melodi yang berbeda dan mandiri dimainkan secara bersamaan serta saling bersahutan.",
+            a: true,
+            exp: "Benar. Polifoni (atau kontrapung) menonjolkan kemandirian dua atau lebih melodi yang berjalan beriringan secara harmonis, seperti pada musik Kanon atau Fugue."
+        },
+        {
+            q: "Akor trinada (triad) mayor dibentuk dari nada ke-1 (root), nada ke-3 minor, dan nada ke-5 murni dari sebuah tangga nada.",
+            a: false,
+            exp: "Salah. Akor mayor dibentuk dari nada ke-1 (root), ke-3 mayor (jarak 2 laras dari root), dan ke-5 murni (jarak 3,5 laras dari root)."
+        },
+        {
+            q: "Dalam penulisan partitur, tanda mula (key signature) yang memiliki dua tanda kres (#) pada garis F dan C menunjukkan tangga nada D Mayor atau B Minor.",
+            a: true,
+            exp: "Benar. Tangga nada D Mayor (dan relatif minornya, B Minor) memiliki dua nada yang dinaikkan setengah laras, yaitu Fis (F#) dan Cis (C#)."
+        },
+        {
+            q: "Tanda sukat 6/8 termasuk ke dalam jenis birama bersusun (compound meter) yang memiliki dua ketukan utama berat dalam setiap biramanya.",
+            a: true,
+            exp: "Benar. Birama 6/8 memiliki 6 ketuk not seperdelapan yang dikelompokkan menjadi 2 aksen utama (ketukan ke-1 kuat, ketukan ke-4 agak kuat)."
+        },
+        {
+            q: "Istilah dinamika 'Crescendo' dalam partitur musik berarti pemain harus melembutkan volume suara secara bertahap hingga menghilang.",
+            a: false,
+            exp: "Salah. Crescendo berarti mengeraskan volume suara secara bertahap. Melembutkan suara secara bertahap disebut Decrescendo atau Diminuendo."
+        },
+        {
+            q: "Tempo 'Andante' menginstruksikan musisi untuk memainkan lagu dengan kecepatan sangat cepat dan tergesa-gesa.",
+            a: false,
+            exp: "Salah. Andante berarti tempo sedang/lambat seperti orang berjalan santai (sekitar 76–108 BPM), bukan tempo cepat."
+        },
+        {
+            q: "Kritik musik yang bertujuan untuk mendidik masyarakat dalam memahami nilai estetika sebuah karya seni disebut kritik pedagogik.",
+            a: false,
+            exp: "Salah. Kritik yang ditujukan untuk konsumsi masyarakat luas agar dapat mengapresiasi seni disebut kritik populer atau kritik jurnalistik. Kritik pedagogik diterapkan di lingkungan pendidikan (guru ke siswa)."
+        },
+        {
+            q: "Tahap pertama dalam struktur penulisan kritik musik menurut Feldman adalah tahap Deskripsi, yaitu memaparkan fakta-fakta objektif yang terdengar dan terlihat dalam pertunjukan.",
+            a: true,
+            exp: "Benar. Urutan kritik seni menurut Edmund Burke Feldman adalah: 1) Deskripsi, 2) Analisis Formal, 3) Interpretasi, dan 4) Evaluasi/Penilaian."
+        },
+        {
+            q: "Pada tahap Interpretasi dalam kritik musik, kritikus bertugas menafsirkan makna, pesan emosional, atau simbol-simbol yang ingin disampaikan oleh komposer.",
+            a: true,
+            exp: "Benar. Interpretasi berfokus pada penggalian makna di balik elemen-elemen musik yang telah dideskripsikan dan dianalisis sebelumnya."
+        },
+        {
+            q: "Seorang kritikus musik profesional diperbolehkan memberikan penilaian subjektif tanpa menyertakan alasan musikal atau bukti teknis dari pertunjukan yang ditonton.",
+            a: false,
+            exp: "Salah. Kritik musik yang baik harus objektif, konstruktif, dan didukung oleh argumentasi teknis/estetis yang dapat dipertanggungjawabkan."
+        },
+        {
+            q: "Dalam manajemen pertunjukan musik, tugas utama seorang Stage Manager adalah mengatur alur teknis di atas panggung, mulai dari keluar-masuk pemain hingga kesiapan alat.",
+            a: true,
+            exp: "Benar. Stage Manager bertanggung jawab penuh atas kelancaran operasional di area panggung selama gladi resik hingga pertunjukan berlangsung."
+        },
+        {
+            q: "Cek suara (Sound Check) sebelum konser berlangsung bertujuan untuk menyesuaikan akustik ruangan, keseimbangan volume (balancing), dan monitor panggung bagi musisi.",
+            a: true,
+            exp: "Benar. Sound check sangat krusial untuk memastikan kualitas audio baik yang didengar penonton (FOH) maupun yang didengar pemain di panggung (monitor)."
+        },
+        {
+            q: "Musik minimalis (Minimalism) adalah aliran musik kontemporer yang ditandai dengan pengulangan pola-pola melodi atau ritme pendek secara terus-menerus dengan perubahan bertahap.",
+            a: true,
+            exp: "Benar. Dipelopori oleh Steve Reich, Philip Glass, dan Terry Riley, musik minimalis menggunakan repetisi motif sederhana sebagai struktur utamanya."
+        },
+        {
+            q: "Sintesis suara (Synthesizer) dalam musik elektronik bekerja dengan cara merekam suara alat musik akustik secara langsung tanpa memanipulasi gelombang listrik.",
+            a: false,
+            exp: "Salah. Synthesizer menghasilkan dan memanipulasi sinyal listrik/gelombang suara (seperti sine, square, sawtooth) secara elektronik untuk menciptakan berbagai karakter bunyi."
+        },
+        {
+            q: "Dalam sistem MIDI (Musical Instrument Digital Interface), kabel MIDI mengirimkan sinyal audio berupa gelombang suara asli secara langsung ke speaker.",
+            a: false,
+            exp: "Salah. MIDI tidak mengirimkan sinyal suara (audio), melainkan mengirimkan data instruksi digital seperti nada apa yang ditekan, durasi, kecepatan (velocity), dan tempo."
+        },
+        {
+            q: "Gamelan kontemporer sering memadukan instrumen gamelan tradisional dengan alat musik Barat atau teknik permainan yang tidak lazim pada tradisi aslinya.",
+            a: true,
+            exp: "Benar. Komposer seperti Rahayu Supanggah dan I Wayan Sadra banyak menciptakan karya gamelan kontemporer dengan teknik garap baru maupun kolaborasi lintas budaya."
+        },
+        {
+            q: "Hak cipta atas sebuah karya lagu secara otomatis hangus apabila lagu tersebut diaransemen ulang oleh musisi lain untuk tujuan komersial.",
+            a: false,
+            exp: "Salah. Hak moral pencipta asli tetap melekat selamanya, dan penggunaan komersial atas aransemen ulang wajib mendapatkan izin/lisensi dari pencipta atau pemegang hak cipta."
+        },
+        {
+            q: "Royalti pertunjukan (Performing Rights) adalah kompensasi finansial yang dibayarkan kepada pencipta lagu ketika karyanya dimainkan di ruang publik atau konser komersial.",
+            a: true,
+            exp: "Benar. Di Indonesia, pengelolaan dan penarikan royalti pertunjukan dikelola melalui Lembaga Manajemen Kolektif Nasional (LMKN)."
+        },
+        {
+            q: "Improvisasi dalam musik jazz maupun musik kontemporer berarti memainkan notasi yang sudah ditulis secara kaku tanpa boleh mengubah satu nada pun.",
+            a: false,
+            exp: "Salah. Improvisasi adalah penciptaan melodi, ritme, atau harmoni secara spontan pada saat pertunjukan berlangsung berdasarkan kerangka harmoni tertentu."
+        },
+        {
+            q: "Timbre atau warna suara memungkinkan telinga manusia membedakan bunyi gitar dan bunyi biola meskipun keduanya memainkan nada dengan tinggi frekuensi yang sama persis.",
+            a: true,
+            exp: "Benar. Timbre dipengaruhi oleh karakteristik harmonik (overtones) dan bahan pembuat instrumen sehingga setiap sumber bunyi memiliki identitas khas."
+        },
+        {
+            q: "Evaluasi pascapertunjukan dalam manajemen seni tidak diperlukan apabila jumlah tiket konser sudah terjual habis (sold out).",
+            a: false,
+            exp: "Salah. Evaluasi tetap wajib dilakukan untuk menilai kualitas artistik, kendala teknis, kepuasan penonton, dan efisiensi anggaran demi perbaikan produksi berikutnya."
+        }
+    ];
+
+    const userAnswers = new Array(questions.length).fill(null);
+
+    function renderQuiz() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = '';
+
+        questions.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'card question-card';
+            card.id = `q-card-${index}`;
+
+            card.innerHTML = `
+                <span class="q-number">Soal ${index + 1}</span>
+                <p class="q-text">${item.q}</p>
+                <div class="options">
+                    <button type="button" class="option-btn" id="btn-${index}-true" onclick="selectAnswer(${index}, true)">BENAR</button>
+                    <button type="button" class="option-btn" id="btn-${index}-false" onclick="selectAnswer(${index}, false)">SALAH</button>
+                </div>
+                <div class="explanation" id="exp-${index}"></div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function selectAnswer(index, value) {
+        if (document.getElementById('submit-btn').disabled) return; // Kunci jika sudah submit
+
+        userAnswers[index] = value;
+
+        document.getElementById(`btn-${index}-true`).classList.remove('selected');
+        document.getElementById(`btn-${index}-false`).classList.remove('selected');
+
+        if (value === true) {
+            document.getElementById(`btn-${index}-true`).classList.add('selected');
+        } else {
+            document.getElementById(`btn-${index}-false`).classList.add('selected');
+        }
+
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const answered = userAnswers.filter(a => a !== null).length;
+        document.getElementById('answered-count').innerText = answered;
+        const pct = (answered / questions.length) * 100;
+        document.getElementById('progress-fill').style.width = `${pct}%`;
+    }
+
+    async function submitQuiz() {
+        const name = document.getElementById('studentName').value.trim();
+        const studentClass = document.getElementById('studentClass').value.trim();
+
+        if (!name || !studentClass) {
+            alert("Harap isi Nama Lengkap dan Kelas terlebih dahulu!");
+            document.getElementById('studentName').focus();
+            return;
+        }
+
+        const unanswered = userAnswers.filter(a => a === null).length;
+        if (unanswered > 0) {
+            const confirmSubmit = confirm(`Masih ada ${unanswered} soal yang belum dijawab. Yakin ingin mengumpulkan sekarang?`);
+            if (!confirmSubmit) return;
+        }
+
+        let correctCount = 0;
+        let detailReport = [];
+
+        questions.forEach((item, index) => {
+            const uAns = userAnswers[index];
+            const isCorrect = uAns === item.a;
+            if (isCorrect) correctCount++;
+
+            const expBox = document.getElementById(`exp-${index}`);
+            expBox.style.display = 'block';
+            expBox.className = `explanation ${isCorrect ? 'correct' : 'incorrect'}`;
+            
+            const userText = uAns === null ? "Tidak dijawab" : (uAns ? "Benar" : "Salah");
+            const keyText = item.a ? "Benar" : "Salah";
+
+            expBox.innerHTML = `
+                <strong>${isCorrect ? '✓ Jawaban Anda Tepat!' : '✗ Kurang Tepat'}</strong> (Jawaban Anda: ${userText} | Kunci: ${keyText})<br>
+                <em>Penjelasan:</em> ${item.exp}
+            `;
+
+            detailReport.push(`No.${index + 1}: ${isCorrect ? 'BENAR' : 'SALAH'} (Jawab: ${userText})`);
+        });
+
+        const finalScore = Math.round((correctCount / questions.length) * 100);
+
+        // Kunci tombol & input
+        document.getElementById('submit-btn').disabled = true;
+        document.getElementById('submit-btn').innerText = "Asesmen Telah Dikumpulkan";
+        document.getElementById('studentName').disabled = true;
+        document.getElementById('studentClass').disabled = true;
+
+        // Tampilkan hasil
+        const resultBox = document.getElementById('result-box');
+        resultBox.style.display = 'block';
+        document.getElementById('final-score').innerText = finalScore;
+        document.getElementById('score-detail').innerText = `Nama: ${name} (${studentClass}) • Benar: ${correctCount} dari ${questions.length} soal`;
+        resultBox.scrollIntoView({ behavior: 'smooth' });
+
+        // Kirim hasil ke Email via Formspree
+        const statusDiv = document.getElementById('email-status');
+        statusDiv.style.background = "#fef9c3";
+        statusDiv.style.color = "#854d0e";
+        statusDiv.innerText = "Sedang mengirim hasil nilai ke email guru...";
+
+        try {
+            const response = await fetch(FORMSPREE_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    _subject: `Hasil Asesmen Seni Musik - ${name} (${studentClass})`,
+                    Nama_Siswa: name,
+                    Kelas: studentClass,
+                    Nilai_Akhir: finalScore,
+                    Jumlah_Benar: `${correctCount} / ${questions.length}`,
+                    Rincian_Jawaban: detailReport.join(' | ')
+                })
+            });
+
+            if (response.ok) {
+                statusDiv.style.background = "#dcfce7";
+                statusDiv.style.color = "#166534";
+                statusDiv.innerText = "✓ Berhasil! Nilai dan rincian jawaban telah terkirim ke email guru.";
+            } else {
+                throw new Error("Gagal mengirim ke endpoint.");
+            }
+        } catch (error) {
+            statusDiv.style.background = "#fee2e2";
+            statusDiv.style.color = "#991b1b";
+            statusDiv.innerText = "⚠ Gagal mengirim otomatis ke email (Pastikan URL Formspree sudah diatur dengan benar). Silakan screenshot halaman ini sebagai bukti.";
+        }
+    }
+
+    renderQuiz();
+</script>
+
+</body>
+</html>
